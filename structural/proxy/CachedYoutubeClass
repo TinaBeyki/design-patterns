@@ -1,0 +1,40 @@
+<?php
+
+class CachedYoutubeClass implements ThirdPartyYoutubeLib
+{
+    private ThirdPartyYoutubeLib $thirdPartyYoutubeLib;
+    private $listCache, $videoCache, $needReset;
+    private $downloadExists = false;
+
+    public function __construct(ThirdPartyYoutubeLib $thirdPartyYoutubeLib)
+    {
+        $this->thirdPartyYoutubeLib = $thirdPartyYoutubeLib;
+    }
+
+    public function listVideos(): array
+    {
+        if($this->listCache == null || $this->needReset)
+        {
+            $this->listCache = $this->thirdPartyYoutubeLib->listVideos();
+        }
+        return $this->listCache;
+    }
+
+    public function getVideoInfo($id): array
+    {
+        if($this->videoCache == null || $this->needReset)
+        {
+            $this->videoCache = $this->thirdPartyYoutubeLib->getVideoInfo($id);
+        }
+        return $this->videoCache;
+    }
+
+    public function downloadVideo($id)
+    {
+        if(!$this->downloadExists || $this->needReset)
+        {
+            $this->thirdPartyYoutubeLib->downloadVideo($id);
+        }
+    }
+
+}
